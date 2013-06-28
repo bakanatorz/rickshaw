@@ -2101,6 +2101,7 @@ Rickshaw.Graph.RangeSlider = Rickshaw.Class.create({
 		var element = this.element = args.element;
 		var graph = this.graph = args.graph;
 		var callback = this.callback = args.callback;
+		var built = this.built = false;
 		this.build();
 
 		graph.onUpdate( function() { this.update() }.bind(this) );
@@ -2111,7 +2112,8 @@ Rickshaw.Graph.RangeSlider = Rickshaw.Class.create({
 		var element = this.element;
 		var graph = this.graph;
 		var callback = this.callback;
-
+		var t = this;
+		
 		$( function() {
 			$(element).slider( {
 				range: true,
@@ -2137,12 +2139,15 @@ Rickshaw.Graph.RangeSlider = Rickshaw.Class.create({
 					callback(event,ui);
 				}
 			} );
+			t.built = true;
 		} );
 
 		element[0].style.width = graph.width + 'px';
 	},
 
 	update: function() {
+		if (!this.built)
+			return;
 
 		var element = this.element;
 		var graph = this.graph;
