@@ -2134,7 +2134,7 @@ Rickshaw.Graph.RangeSlider = Rickshaw.Class.create({
 					if (graph.dataDomain()[1] == ui.values[1]) {
 						graph.window.xMax = undefined;
 					}
-					callback.call(event,ui);
+					callback(event,ui);
 				}
 			} );
 		} );
