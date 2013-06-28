@@ -2110,6 +2110,7 @@ Rickshaw.Graph.RangeSlider = Rickshaw.Class.create({
 
 		var element = this.element;
 		var graph = this.graph;
+		var callback = this.callback;
 
 		$( function() {
 			$(element).slider( {
