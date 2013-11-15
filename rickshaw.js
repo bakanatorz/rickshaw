@@ -2112,14 +2112,17 @@ Rickshaw.Graph.RangeSlider = Rickshaw.Class.create({
 		var element = this.element;
 		var graph = this.graph;
 		var callback = this.callback;
+		var values = this.values;
+		var min = this.min;
+		var max = this.min;
 		var t = this;
 		
 		$( function() {
 			$(element).slider( {
 				range: true,
-				min: graph.dataDomain()[0],
-				max: graph.dataDomain()[1],
-				values: [ 
+				min: min || graph.dataDomain()[0],
+				max: max || graph.dataDomain()[1],
+				values: values || [ 
 					graph.dataDomain()[0],
 					graph.dataDomain()[1]
 				],
