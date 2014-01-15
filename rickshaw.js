@@ -2397,6 +2397,8 @@ Rickshaw.Graph.RangeSlider = Rickshaw.Class.create({
 		var element = this.element = args.element;
 		var graph = this.graph = args.graph;
 
+		this.slideCallbacks = [];
+
 		this.build();
 
 		graph.onUpdate( function() { this.update() }.bind(this) );
@@ -2408,6 +2410,7 @@ Rickshaw.Graph.RangeSlider = Rickshaw.Class.create({
 		var graph = this.graph;
 
 		var domain = graph.dataDomain();
+		var self = this;
 
 		$( function() {
 			$(element).slider( {
@@ -2432,9 +2435,14 @@ Rickshaw.Graph.RangeSlider = Rickshaw.Class.create({
 					if (domain[0] == ui.values[0]) {
 						graph.window.xMin = undefined;
 					}
+
 					if (domain[1] == ui.values[1]) {
 						graph.window.xMax = undefined;
 					}
+
+					self.slideCallbacks.forEach(function(callback) {
+						callback(graph, graph.window.xMin, graph.window.xMax);
+					});
 				}
 			} );
 		} );
@@ -2463,6 +2471,10 @@ Rickshaw.Graph.RangeSlider = Rickshaw.Class.create({
 		}
 
 		$(element).slider('option', 'values', values);
+	},
+
+	onSlide: function(callback) {
+		this.slideCallbacks.push(callback);
 	}
 });
 
@@ -2492,6 +2504,8 @@ Rickshaw.Graph.RangeSlider.Preview = Rickshaw.Class.create({
 		this.defaults.gripperColor = d3.rgb(this.defaults.frameColor).darker().toString(); 
 
 		this.configureCallbacks = [];
+		this.slideCallbacks = [];
+
 		this.previews = [];
 
 		args.width = args.width || this.graphs[0].width || this.defaults.width;
@@ -2499,6 +2513,10 @@ Rickshaw.Graph.RangeSlider.Preview = Rickshaw.Class.create({
 
 		this.configure(args);
 		this.render();
+	},
+
+	onSlide: function(callback) {
+		this.slideCallbacks.push(callback);
 	},
 
 	onConfigure: function(callback) {
@@ -2551,12 +2569,14 @@ Rickshaw.Graph.RangeSlider.Preview = Rickshaw.Class.create({
 
 			var graphArgs = Rickshaw.extend({}, parent.config);
 			var height = self.previewHeight / self.graphs.length;
+			var renderer = parent.renderer.name;
 
 			Rickshaw.extend(graphArgs, {
 				element: this.appendChild(document.createElement("div")),
 				height: height,
 				width: self.previewWidth,
-				series: parent.series
+				series: parent.series,
+				renderer: renderer
 			});
 
 			var graph = new Rickshaw.Graph(graphArgs);
@@ -2823,6 +2843,10 @@ Rickshaw.Graph.RangeSlider.Preview = Rickshaw.Class.create({
 					domainScale(frameAfterDrag[1])
 				];
 
+				self.slideCallbacks.forEach(function(callback) {
+					callback(graph, windowAfterDrag[0], windowAfterDrag[1]);
+				});
+
 				if (frameAfterDrag[0] === 0) {
 					windowAfterDrag[0] = undefined;
 				}
@@ -2831,7 +2855,7 @@ Rickshaw.Graph.RangeSlider.Preview = Rickshaw.Class.create({
 				}
 				graph.window.xMin = windowAfterDrag[0];
 				graph.window.xMax = windowAfterDrag[1];
-				
+
 				graph.update();
 			});
 		}
@@ -3456,8 +3480,14 @@ Rickshaw.Graph.Renderer.Multi = Rickshaw.Class.create( Rickshaw.Graph.Renderer, 
 				.map( function(s) { return s.stack });
 
 			if (!data.length) return;
-
-			var domain = $super(data);
+			
+			var domain = null;
+			if (group.renderer && group.renderer.domain) {
+				domain = group.renderer.domain(data);
+			}
+			else {
+				domain = $super(data);
+			}
 			domains.push(domain);
 		});
 
