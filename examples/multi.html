@@ -25,7 +25,7 @@
 
 <script>
 
-var seriesData = [ [], [], [], [], [] ];
+var seriesData = [ [], [], [], [], [], [] ];
 var random = new Rickshaw.Fixtures.RandomData(50);
 
 for (var i = 0; i < 75; i++) {
@@ -40,6 +40,11 @@ var graph = new Rickshaw.Graph( {
 	dotSize: 2,
 	series: [
 		{
+			name: 'weather events',
+            data: seriesData.shift().filter(function(d) { console.log(d.y); return d.y > 90 }),
+			color: 'rgba(127, 127, 0, 0.4)',
+			renderer: 'marker'
+		}, {
 			name: 'temperature',
 			data: seriesData.shift(),
 			color: 'rgba(255, 0, 0, 0.4)',
