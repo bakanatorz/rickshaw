@@ -41,7 +41,7 @@ var graph = new Rickshaw.Graph( {
 	series: [
 		{
 			name: 'weather events',
-            data: seriesData.shift().filter(function(d) { console.log(d.y); return d.y > 90 }),
+            data: seriesData.shift().filter(function(d) { return d.y > 90 }),
 			color: 'rgba(127, 127, 0, 0.4)',
 			renderer: 'marker'
 		}, {
