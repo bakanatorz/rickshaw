@@ -11,6 +11,7 @@ Rickshaw.Graph.Renderer.Marker = Rickshaw.Class.create( Rickshaw.Graph.Renderer,
 			fill: true,
 			stroke: false,
 			padding:{ top: 0.01, right: 0.01, bottom: 0.01, left: 0.01 },
+            strokeDashArray: "1, 0",
 			strokeWidth: 2
 		} );
 	},
@@ -29,6 +30,7 @@ Rickshaw.Graph.Renderer.Marker = Rickshaw.Class.create( Rickshaw.Graph.Renderer,
 		var vis = args.vis || graph.vis;
 
 		var strokeWidth = this.strokeWidth;
+		var strokeDashArray = this.strokeDashArray;
 
 		vis.selectAll('*').remove();
 
@@ -44,7 +46,8 @@ Rickshaw.Graph.Renderer.Marker = Rickshaw.Class.create( Rickshaw.Graph.Renderer,
 					.attr("x2", function(d) { return graph.x(d.x) })
 					.attr("y2", graph.height)
                     .style("stroke", series.color)
-                    .style("stroke-width", function(d) {return ("strokeWidth" in d) ? d.strokeWidth : strokeWidth});
+                    .style("stroke-width", function(d) {return ("strokeWidth" in d) ? d.strokeWidth : strokeWidth})
+                    .style("stroke-dasharray", function(d) {return ("strokeDashArray" in d) ? d.strokeDashArray : strokeDashArray});
 			if (series.className) {
 				nodes.classed(series.className, true);
 			}
