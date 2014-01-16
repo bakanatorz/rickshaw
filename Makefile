@@ -44,6 +44,7 @@ JS_FILES=\
 	src/js/Rickshaw.Graph.Renderer.Bar.js\
 	src/js/Rickshaw.Graph.Renderer.Area.js\
 	src/js/Rickshaw.Graph.Renderer.ScatterPlot.js\
+	src/js/Rickshaw.Graph.Renderer.Marker.js\
 	src/js/Rickshaw.Graph.Renderer.Multi.js\
 	src/js/Rickshaw.Graph.Renderer.LinePlot.js\
 	src/js/Rickshaw.Graph.Smoother.js\
