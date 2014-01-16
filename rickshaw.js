@@ -2097,10 +2097,16 @@ Rickshaw.Graph.HoverDetail = Rickshaw.Class.create({
 			if (dataIndex < 0) dataIndex = 0;
 			var value = data[dataIndex];
 
+            var vertical = graph.renderer.name == "marker" || series.renderer == "marker";
+
 			var distance = Math.sqrt(
 				Math.pow(Math.abs(graph.x(value.x) - eventX), 2) +
-				Math.pow(Math.abs(graph.y(value.y + value.y0) - eventY), 2)
+				(vertical ? 0 : Math.pow(Math.abs(graph.y(value.y + value.y0) - eventY), 2))
 			);
+
+            if (vertical) {
+              distance *= 2;
+            }
 
 			var xFormatter = series.xFormatter || this.xFormatter;
 			var yFormatter = series.yFormatter || this.yFormatter;
@@ -2112,7 +2118,8 @@ Rickshaw.Graph.HoverDetail = Rickshaw.Class.create({
 				value: value,
 				distance: distance,
 				order: j,
-				name: series.name
+				name: series.name,
+                vertical: vertical
 			};
 
 			if (!nearestPoint || distance < nearestPoint.distance) {
@@ -2191,7 +2198,13 @@ Rickshaw.Graph.HoverDetail = Rickshaw.Class.create({
 		var actualY = series.scale ? series.scale.invert(point.value.y) : point.value.y;
 
 		item.innerHTML = this.formatter(series, point.value.x, actualY, formattedXValue, formattedYValue, point);
-		item.style.top = this.graph.y(point.value.y0 + point.value.y) + 'px';
+        var vertical = graph.renderer.name == "marker" || series.renderer == "marker";
+        if (vertical) {
+          item.style.top = args.mouseY + 'px';
+        }
+        else {
+          item.style.top = this.graph.y(point.value.y0 + point.value.y) + 'px';
+        }
 
 		this.element.appendChild(item);
 
@@ -3450,6 +3463,7 @@ Rickshaw.Graph.Renderer.Marker = Rickshaw.Class.create( Rickshaw.Graph.Renderer,
 			fill: true,
 			stroke: false,
 			padding:{ top: 0.01, right: 0.01, bottom: 0.01, left: 0.01 },
+            strokeDashArray: "1, 0",
 			strokeWidth: 2
 		} );
 	},
@@ -3468,6 +3482,7 @@ Rickshaw.Graph.Renderer.Marker = Rickshaw.Class.create( Rickshaw.Graph.Renderer,
 		var vis = args.vis || graph.vis;
 
 		var strokeWidth = this.strokeWidth;
+		var strokeDashArray = this.strokeDashArray;
 
 		vis.selectAll('*').remove();
 
@@ -3483,7 +3498,8 @@ Rickshaw.Graph.Renderer.Marker = Rickshaw.Class.create( Rickshaw.Graph.Renderer,
 					.attr("x2", function(d) { return graph.x(d.x) })
 					.attr("y2", graph.height)
                     .style("stroke", series.color)
-                    .style("stroke-width", function(d) {return ("strokeWidth" in d) ? d.strokeWidth : strokeWidth});
+                    .style("stroke-width", function(d) {return ("strokeWidth" in d) ? d.strokeWidth : strokeWidth})
+                    .style("stroke-dasharray", function(d) {return ("strokeDashArray" in d) ? d.strokeDashArray : strokeDashArray});
 			if (series.className) {
 				nodes.classed(series.className, true);
 			}
