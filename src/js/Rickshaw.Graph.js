@@ -21,6 +21,8 @@ Rickshaw.Graph = function(args) {
 			offset: 'zero',
 			min: undefined,
 			max: undefined,
+            xMin: undefined,
+            xMax: undefined,
 			preserve: false,
 			xScale: undefined,
 			yScale: undefined,
@@ -100,6 +102,9 @@ Rickshaw.Graph = function(args) {
 
 		var min = d3.min( data.map( function(d) { return d[0].x } ) );
 		var max = d3.max( data.map( function(d) { return d[d.length - 1].x } ) );
+
+		min = this.xMin === undefined ? min : this.xMin;
+		max = this.xMax === undefined ? max : this.xMax;
 
 		return [min, max];
 	};

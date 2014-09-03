@@ -407,6 +407,8 @@ Rickshaw.Graph = function(args) {
 			offset: 'zero',
 			min: undefined,
 			max: undefined,
+            xMin: undefined,
+            xMax: undefined,
 			preserve: false,
 			xScale: undefined,
 			yScale: undefined,
@@ -486,6 +488,9 @@ Rickshaw.Graph = function(args) {
 
 		var min = d3.min( data.map( function(d) { return d[0].x } ) );
 		var max = d3.max( data.map( function(d) { return d[d.length - 1].x } ) );
+
+		min = this.xMin === undefined ? min : this.xMin;
+		max = this.xMax === undefined ? max : this.xMax;
 
 		return [min, max];
 	};
@@ -1931,6 +1936,8 @@ Rickshaw.Graph.Behavior.Series.Toggle = function(args) {
 				line.element.classList.add('disabled');
 			}
 
+			self.graph.update();
+
 		}.bind(this);
 		
                 var label = line.element.getElementsByTagName('span')[0];
@@ -1976,6 +1983,8 @@ Rickshaw.Graph.Behavior.Series.Toggle = function(args) {
 
                         }
 
+                        self.graph.update();
+
                 };
 
 	};
@@ -2017,12 +2026,10 @@ Rickshaw.Graph.Behavior.Series.Toggle = function(args) {
 				}
 				
 				s.disabled = true;
-				self.graph.update();
 			};
 
 			s.enable = function() {
 				s.disabled = false;
-				self.graph.update();
 			};
 		} );
 	};
@@ -3038,6 +3045,9 @@ Rickshaw.Graph.Renderer = Rickshaw.Class.create( {
 			if (series[series.length - 1].x > xMax) xMax = series[series.length - 1].x;
 		} );
 
+		xMin = this.graph.xMin === undefined ? xMin : this.graph.xMin;
+		xMax = this.graph.xMax === undefined ? xMax : this.graph.xMax;
+
 		xMin -= (xMax - xMin) * this.padding.left;
 		xMax += (xMax - xMin) * this.padding.right;
 
@@ -3759,7 +3769,6 @@ Rickshaw.Graph.Smoother = Rickshaw.Class.create({
 					max: 100,
 					slide: function( event, ui ) {
 						self.setScale(ui.value);
-						self.graph.update();
 					}
 				} );
 			} );
